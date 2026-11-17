@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тест: Бази даних і PostgreSQL</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1d2433;--muted:#667085;--line:#e1e5ee;--accent:#336791;--accent-t:#fff;--ok:#1a7f4b;--ok-bg:#e3f6ec;--bad:#c0392b;--bad-bg:#fdeaea}
+@media (prefers-color-scheme:dark){:root{--bg:#12161f;--card:#1b2130;--text:#e8ecf5;--muted:#9aa4b8;--line:#2d3548;--accent:#6aa3d1;--accent-t:#0e1520;--ok:#5fd394;--ok-bg:#16301f;--bad:#ff8a7a;--bad-bg:#3a1c1a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:680px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.25rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:0 0 6px}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;margin-bottom:14px}
+.q{font-size:1.1rem;font-weight:600;margin:0 0 14px}
+.opt{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.exp{margin:6px 0 14px;padding:12px 14px;border-radius:10px;background:var(--bg);border-left:4px solid var(--accent);font-size:.95rem}
+.btn{font:inherit;font-weight:600;background:var(--accent);color:var(--accent-t);border:0;border-radius:10px;padding:11px 20px;cursor:pointer;margin-right:8px}
+.btn.alt{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.inp{display:block;width:100%;font:inherit;color:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 10px}
+.inp.err{border-color:var(--bad)}
+.score{font-size:2.6rem;font-weight:700;margin:6px 0}
+.rev{margin:16px 0 0;padding:0;list-style:none}
+.rev li{padding:10px 0;border-top:1px solid var(--line);font-size:.92rem}
+.rev b.ok{color:var(--ok)}.rev b.bad{color:var(--bad)}
+</style>
+</head>
+<body>
+<main>
+<h1>Бази даних і СУБД. PostgreSQL</h1>
+<p class="sub">10 клас · 15 запитань · pgAdmin, psql, проєктування БД</p>
+<div class="card" id="app"></div>
+</main>
+<script>
+// ===== НАЛАШТУВАННЯ =====
+// Вкажіть свою пошту. Після першої відправки FormSubmit надішле на неї лист
+// з посиланням активації: його треба підтвердити один раз.
+var TEACHER_EMAIL="k.pirumshoeva@gmail.com";
+var STORE_KEY="bd_quiz_attempt_v1";
+// =========================
+var Q=[
+["Що таке база даних?",["Програма для створення презентацій","Упорядкована сукупність даних, що зберігається та обробляється в електронному вигляді","Мова програмування для вебсайтів","Пристрій для зберігання файлів"],1,"База даних — це організована сукупність взаємопов’язаних даних, до яких можна швидко отримувати доступ і якими можна керувати."],
+["Що таке СУБД?",["Система управління базами даних — програмне забезпечення для створення, зберігання та обробки баз даних","Спеціальний сервер для друку документів","Стандарт оформлення таблиць","Різновид операційної системи"],0,"СУБД забезпечує створення БД, доступ до даних, їх захист, цілісність і одночасну роботу багатьох користувачів."],
+["Яке з наведеного є СУБД?",["Google Chrome","Adobe Photoshop","Блокнот","PostgreSQL"],3,"PostgreSQL — потужна вільна об’єктно-реляційна СУБД. Решта варіантів — браузер, графічний редактор і текстовий редактор."],
+["У реляційній базі даних дані зберігаються у вигляді:",["Пов’язаних таблиць зі стовпцями та рядками","Дерева каталогів","Окремих текстових абзаців","Графічних зображень"],0,"Реляційна модель подає дані у вигляді таблиць (відношень), між якими встановлюються зв’язки."],
+["Що називають записом (рядком) таблиці?",["Назву властивості об’єкта","Набір значень усіх полів, що описують один об’єкт","Ім’я таблиці","Тип даних стовпця"],1,"Кожен рядок таблиці — це запис, який описує один конкретний об’єкт (наприклад, одного учня)."],
+["Яке призначення первинного ключа (PRIMARY KEY)?",["Шифрувати дані в таблиці","Зберігати пароль користувача","Однозначно ідентифікувати кожен запис таблиці","Сортувати записи за алфавітом"],2,"Значення первинного ключа унікальне та не може бути порожнім, тому за ним можна однозначно знайти запис."],
+["Що таке зовнішній ключ (FOREIGN KEY)?",["Ключ для входу в pgAdmin","Поле, яке посилається на первинний ключ іншої таблиці та створює зв’язок між таблицями","Ключ, який зберігається на зовнішньому носії","Будь-яке поле з числовим типом"],1,"Зовнішній ключ забезпечує зв’язок між таблицями та підтримує цілісність даних."],
+["Який номер порту за замовчуванням використовує сервер PostgreSQL?",["80","3306","8080","5432"],3,"За замовчуванням PostgreSQL слухає порт 5432. Порт 3306 — стандартний для MySQL, 80 — для HTTP."],
+["Як називається суперкористувач (адміністратор), що створюється під час встановлення PostgreSQL?",["postgres","admin","root","sa"],0,"Під час встановлення створюється роль postgres, для якої задають пароль. Саме нею зазвичай підключаються вперше."],
+["Що таке pgAdmin?",["Компілятор мови SQL","Антивірус для серверів БД","Текстовий редактор для PostgreSQL","Графічний інструмент для адміністрування та роботи з PostgreSQL"],3,"pgAdmin — графічний інтерфейс, у якому можна створювати бази, таблиці, виконувати SQL-запити та керувати користувачами."],
+["Що таке psql?",["Інтерактивний консольний (текстовий) клієнт для роботи з PostgreSQL","Графічний редактор діаграм","Формат файлів для резервних копій","Вбудований браузер у pgAdmin"],0,"psql працює в командному рядку: у ньому виконують SQL-запити та службові команди, що починаються з оберненої скісної риски."],
+["Яка команда psql виводить список баз даних на сервері?",["\\q","\\dt","\\l","\\c"],2,"\\l — список баз даних; \\dt — список таблиць поточної бази; \\c — підключення до іншої бази; \\q — вихід з psql."],
+["Що зображує ER-діаграма (діаграма «сутність — зв’язок»)?",["Послідовність виконання SQL-команд","Схему підключення комп’ютерів до мережі","Структуру файлів на диску","Сутності предметної області, їхні атрибути та зв’язки між ними"],3,"ER-діаграма — це концептуальна модель бази даних: сутності (майбутні таблиці), їхні атрибути та зв’язки."],
+["Який тип зв’язку «один до багатьох» наведено в прикладі?",["Один клас — багато учнів (кожен учень належить одному класу)","Одна людина — один паспорт","Багато студентів — багато курсів","Один учень — одне прізвище"],0,"У зв’язку 1:N один запис однієї таблиці пов’язаний з багатьма записами іншої. «Багато студентів — багато курсів» — це M:N, а «людина — паспорт» — 1:1."],
+["З якого етапу починається проєктування бази даних?",["Заповнення таблиць даними","Створення SQL-запитів","Аналіз предметної області та визначення вимог до даних","Встановлення паролів користувачам"],2,"Спочатку з’ясовують, які дані потрібно зберігати. Далі будують концептуальну (ER) модель, потім логічну (таблиці, ключі) і фізичну (реалізація в СУБД)."]
+];
+var app=document.getElementById("app"),i=0,score=0,ans=[],who="",payload=null;
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function load(){try{return JSON.parse(localStorage.getItem(STORE_KEY))}catch(e){return null}}
+function store(o){try{localStorage.setItem(STORE_KEY,JSON.stringify(o))}catch(e){}}
+function note(t){app.innerHTML="";app.appendChild(el("p",0,t))}
+
+function form(){
+  app.innerHTML="";
+  app.appendChild(el("p","q","Введіть ім’я та прізвище"));
+  var f=el("input","inp");f.placeholder="Наприклад: Олена Коваленко";f.maxLength=60;app.appendChild(f);
+  app.appendChild(el("p","sub","Тест можна пройти лише один раз. Результат автоматично надійде вчителю."));
+  var b=el("button","btn","Почати тест");b.type="button";
+  b.onclick=function(){
+    var v=f.value.trim();
+    if(v.split(/\s+/).length<2){f.classList.add("err");f.focus();return}
+    who=v;i=0;score=0;ans=[];
+    store({who:who,started:Date.now()});
+    show();
+  };
+  app.appendChild(b);
+}
+function show(){
+  app.innerHTML="";
+  var q=Q[i];
+  var bar=el("div","bar"),b=el("i");b.style.width=(i/Q.length*100)+"%";bar.appendChild(b);app.appendChild(bar);
+  var m=el("div","meta");m.appendChild(el("span",0,"Запитання "+(i+1)+" з "+Q.length));app.appendChild(m);
+  app.appendChild(el("p","q",q[0]));
+  var btns=[];
+  q[1].forEach(function(t,k){
+    var o=el("button","opt",t);o.type="button";
+    o.onclick=function(){pick(k,btns)};
+    btns.push(o);app.appendChild(o);
+  });
+}
+function pick(k,btns){
+  var q=Q[i],good=k===q[2];
+  if(good)score++;
+  ans.push(k);
+  btns.forEach(function(o,j){o.disabled=true;if(j===q[2])o.classList.add("ok");else if(j===k)o.classList.add("bad")});
+  app.appendChild(el("div","exp",(good?"Правильно! ":"Не зовсім. ")+q[3]));
+  var n=el("button","btn",i<Q.length-1?"Далі":"Завершити тест");n.type="button";
+  n.onclick=function(){i++;i<Q.length?show():finish()};
+  app.appendChild(n);n.focus();
+}
+function buildPayload(){
+  var p={"Учень":who,"Результат":score+" з "+Q.length,"Відсоток":Math.round(score/Q.length*100)+"%","Час завершення":new Date().toLocaleString("uk-UA")};
+  Q.forEach(function(q,k){
+    p["Питання "+(k+1)]=(ans[k]===q[2]?"✓ ":"✗ ")+q[1][ans[k]];
+  });
+  p._subject="Результат тесту: "+who+" — "+score+"/"+Q.length;
+  p._template="table";p._captcha="false";
+  return p;
+}
+function finish(){
+  payload=buildPayload();
+  store({who:who,score:score,total:Q.length,sent:false,payload:payload,ans:ans});
+  results(false);
+  send();
+}
+function results(sentErr){
+  app.innerHTML="";
+  var p=Math.round(score/Q.length*100);
+  var msg=p>=90?"Відмінно!":p>=70?"Добре!":p>=50?"Непогано, але варто повторити тему.":"Варто повторити матеріал.";
+  app.appendChild(el("p","meta","Результат"));
+  app.appendChild(el("div","score",score+" / "+Q.length+" ("+p+"%)"));
+  app.appendChild(el("p",0,who+", "+msg.toLowerCase()));
+  var st=el("p","sub","Надсилаю результат вчителю…");st.id="st";app.appendChild(st);
+  var r=el("button","btn","Надіслати ще раз");r.type="button";r.id="retry";r.style.display="none";r.onclick=send;app.appendChild(r);
+  var d=el("button","btn alt","Переглянути відповіді");d.type="button";
+  d.onclick=function(){d.remove();review()};app.appendChild(d);
+}
+function say(t,retry){
+  var s=document.getElementById("st"),r=document.getElementById("retry");
+  if(s)s.textContent=t;if(r)r.style.display=retry?"inline-block":"none";
+}
+function send(){
+  say("Надсилаю результат вчителю…",false);
+  fetch("https://formsubmit.co/ajax/"+encodeURIComponent(TEACHER_EMAIL),{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Accept":"application/json"},
+    body:JSON.stringify(payload)
+  }).then(function(r){
+    if(!r.ok)throw new Error("http "+r.status);
+    return r.json();
+  }).then(function(){
+    store({who:who,score:score,total:Q.length,sent:true,ans:ans});
+    say("Результат надіслано вчителю. Повторна спроба неможлива.",false);
+  }).catch(function(){
+    say("Не вдалося надіслати результат. Перевірте інтернет і натисніть «Надіслати ще раз». Не закривайте сторінку.",true);
+  });
+}
+function review(){
+  var ul=el("ul","rev");
+  Q.forEach(function(q,k){
+    var li=el("li"),ok=ans[k]===q[2];
+    li.appendChild(el("b",ok?"ok":"bad",(k+1)+". "+(ok?"✓ ":"✗ ")));
+    li.appendChild(document.createTextNode(q[0]));
+    li.appendChild(document.createElement("br"));
+    li.appendChild(el("span",0,"Правильна відповідь: "+q[1][q[2]]));
+    ul.appendChild(li);
+  });
+  app.appendChild(ul);
+}
+// старт: перевірка, чи тест уже проходили в цьому браузері
+var old=load();
+if(!old){form()}
+else if(old.sent){note("Ви вже пройшли цей тест: "+old.score+" з "+old.total+". Повторна спроба неможлива.")}
+else if(old.payload){who=old.who;score=old.score;ans=old.ans||[];payload=old.payload;results(true);send()}
+else{note("Тест уже було розпочато в цьому браузері. Повторна спроба неможлива, зверніться до вчителя.")}
+</script>
+</body>
+</html>
